@@ -8,7 +8,7 @@ export const Todo = () => {
 
     const [task, setTask] = useState([]);
 
-    const[dateTime,setDateTime]=useState("")
+    const [dateTime, setDateTime] = useState("")
 
 
     const handleInputChange = (value) => {
@@ -30,23 +30,28 @@ export const Todo = () => {
     }
 
     //todo date and time
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const updatedDate = now.toLocaleDateString();
+            const updatedTime = now.toLocaleTimeString();
+            setDateTime(`${updatedDate} - ${updatedTime}`)
+        }, 1000)
+        return () => clearInterval(interval);
+    }, []);
 
-    useEffect(()=>{
-        const interval=setInterval(() => {
-        const now = new Date();
-        const updatedDate = now.toLocaleDateString();
-        const updatedTime = now.toLocaleTimeString();
-        setDateTime(`${updatedDate} - ${updatedTime}`)
-    }, 1000)
-    return()=>clearInterval(interval);
+    //todo handleDeleteTodo function
+    const handleDeleteTodo=(value)=>{
+        const updatedTask=task.filter((currTask)=>currTask !== value );
+        setTask(updatedTask); 
+    }
 
+   // todo handleClearTodoData function
+   const handleClearTodoData=()=>{
+    setTask([])
+   }
 
-    },[]);
-
-
-
-    
-
+   
     return (
         <section className="todo-container">
             <header>
@@ -68,15 +73,19 @@ export const Todo = () => {
                                 <button className="check-btn">
                                     <MdCheck />
                                 </button>
-                                <button className="delete-btn">
+                                <button className="delete-btn" onClick={()=>handleDeleteTodo(currTask)}>
                                     <MdDeleteOutline />
                                 </button>
                             </li>
                         })
                     }
                 </ul>
-
+            </section>
+            <section>
+                <button className="clear-btn" onClick={handleClearTodoData}>Clear All</button>
             </section>
         </section>
     )
 }
+
+
