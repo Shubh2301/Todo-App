@@ -3,20 +3,35 @@ import "./Todo.css"
 import {TodoForm} from "./TodoForm";
 import { TodoList } from "./TodoList";
 import { TodoDate } from "./TodoDate";
+import { getLocalStorageTodoData,setLocalStorageTodoData} from "./TodoLocalStorage";
 
-export const Todo = () => {
+
+
+// const getLocalStorageTodoData=()=>{
     
-    const [task, setTask] = useState([]);
+
+// }
+export const Todo = () => {
+    const [task, setTask] = useState(()=>getLocalStorageTodoData());
 
     const handleFormSubmit = (inputValue) => {
-            if (!inputValue) return;
-            if (task.includes(inputValue))return;
-            setTask((prevTask) => [...prevTask, inputValue]);   
-        }
+        const{id,content,checked}=inputValue;
+
+            if (!content) return;
+
+            const ifTodoContentMatched=task.find((currTask)=>currTask.content===content);
+            if (ifTodoContentMatched)return;
+
+            setTask((prevTask) => [...prevTask, {id,content,checked}]);   
+        };
+    //todo add data to localStorage
+
+    setLocalStorageTodoData(task)
+    
    
     //todo handleDeleteTodo function
     const handleDeleteTodo=(value)=>{
-        const updatedTask=task.filter((currTask)=>currTask !== value );
+        const updatedTask=task.filter((currTask)=>currTask.content !== value );
         setTask(updatedTask); 
     }
 
@@ -24,7 +39,20 @@ export const Todo = () => {
    const handleClearTodoData=()=>{
     setTask([])
    }
+  
+   //todo handleCheckedTodo function
 
+   const handleCheckedTodo=(content)=>{
+    const upadtesTask=task.map((currTask)=>{
+        if(currTask.content===content){
+            return{...currTask,checked:!currTask.checked}
+        }else{
+            return currTask;
+        }
+    });
+    setTask(upadtesTask);
+
+   }
    
     return (
         <section className="todo-container">
@@ -36,9 +64,11 @@ export const Todo = () => {
             <section className="myUnOrdList">
                 <ul>
                     {
-                        task.map((currTask, idx) => {
+                        task.map((currTask) => {
                             return (
-                                <TodoList key={idx} data={currTask} onHandleDeleteTodo={handleDeleteTodo} />
+                                <TodoList key={currTask.id} data={currTask.content} onHandleDeleteTodo={handleDeleteTodo}
+                                checked={currTask.checked}
+                                onHandleCheckedTodo={handleCheckedTodo} />
                             )
                         })
                     }
